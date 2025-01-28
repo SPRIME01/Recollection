@@ -3,7 +3,13 @@ from PIL import Image
 import io
 
 def preprocess_image(image: np.ndarray) -> np.ndarray:
-    # Add preprocessing logic (e.g., resizing, normalization)
+    # Resize image to 300x300 pixels
+    image = Image.fromarray(image)
+    image = image.resize((300, 300))
+
+    # Normalize image pixel values to range [0, 1]
+    image = np.array(image) / 255.0
+
     return image
 
 def optimize_image(image: np.ndarray) -> bytes:
