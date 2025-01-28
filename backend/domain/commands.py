@@ -1,10 +1,8 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 
-@dataclass
-class CaptureScreenshotCommand:
+class CaptureScreenshotCommand(BaseModel):
     pass
 
-@dataclass
-class SearchCommand:
+class SearchCommand(BaseModel):
     query: str
     threshold: float = 0.7

@@ -1,6 +1,7 @@
 from minio import Minio
 import numpy as np
 from PIL import Image
+import os
 
 class MinIORepository:
     def __init__(self):

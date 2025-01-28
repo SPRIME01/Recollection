@@ -4,23 +4,31 @@ from backend.repositories.libsql_repo import LibSQLRepository
 from backend.repositories.minio_repo import MinIORepository
 from backend.domain.commands import CaptureScreenshotCommand
 from backend.domain.entities import Screenshot
+from pydantic import BaseModel
 
 app = FastAPI()
 
 # Dependency injection
-def get_screenshot_service():
+def get_screenshot_service() -> ScreenshotService:
     return ScreenshotService(
         db_repo=LibSQLRepository(),
         storage_repo=MinIORepository()
     )
 
-@app.post("/capture")
-async def capture_screenshot(service: ScreenshotService = Depends(get_screenshot_service)):
-    command = CaptureScreenshotCommand()
-    screenshot = await service.execute(command)
-    return {"status": "success", "screenshot": screenshot}
+class CaptureScreenshotResponse(BaseModel):
+    status: str
+    screenshot: Screenshot
 
-@app.get("/timeline")
-async def get_timeline(service: ScreenshotService = Depends(get_screenshot_service)):
+@app.post("/capture", response_model=CaptureScreenshotResponse)
+async def capture_screenshot(service: ScreenshotService = Depends(get_screenshot_service)) -> CaptureScreenshotResponse:
+    command = CaptureScreenshotCommand()
+    screenshot = await service.capture()
+    return CaptureScreenshotResponse(status="success", screenshot=screenshot)
+
+class TimelineResponse(BaseModel):
+    screenshots: list[Screenshot]
+
+@app.get("/timeline", response_model=TimelineResponse)
+async def get_timeline(service: ScreenshotService = Depends(get_screenshot_service)) -> TimelineResponse:
     screenshots = await service.get_timeline()
-    return {"screenshots": screenshots}
+    return TimelineResponse(screenshots=screenshots)
