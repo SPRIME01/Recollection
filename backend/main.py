@@ -9,10 +9,10 @@ from pydantic import BaseModel
 app = FastAPI()
 
 # Dependency injection
-def get_screenshot_service() -> ScreenshotService:
+def get_screenshot_service(db_repo: LibSQLRepository = Depends(LibSQLRepository), storage_repo: MinIORepository = Depends(MinIORepository)) -> ScreenshotService:
     return ScreenshotService(
-        db_repo=LibSQLRepository(),
-        storage_repo=MinIORepository()
+        db_repo=db_repo,
+        storage_repo=storage_repo
     )
 
 class CaptureScreenshotResponse(BaseModel):
@@ -20,15 +20,15 @@ class CaptureScreenshotResponse(BaseModel):
     screenshot: Screenshot
 
 @app.post("/capture", response_model=CaptureScreenshotResponse)
-async def capture_screenshot(service: ScreenshotService = Depends(get_screenshot_service)) -> CaptureScreenshotResponse:
+def capture_screenshot(service: ScreenshotService = Depends(get_screenshot_service)) -> CaptureScreenshotResponse:
     command = CaptureScreenshotCommand()
-    screenshot = await service.capture()
+    screenshot = service.capture()
     return CaptureScreenshotResponse(status="success", screenshot=screenshot)
 
 class TimelineResponse(BaseModel):
     screenshots: list[Screenshot]
 
 @app.get("/timeline", response_model=TimelineResponse)
-async def get_timeline(service: ScreenshotService = Depends(get_screenshot_service)) -> TimelineResponse:
-    screenshots = await service.get_timeline()
+def get_timeline(service: ScreenshotService = Depends(get_screenshot_service)) -> TimelineResponse:
+    screenshots = service.get_timeline()
     return TimelineResponse(screenshots=screenshots)

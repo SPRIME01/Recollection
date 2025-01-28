@@ -14,7 +14,7 @@ class ScreenshotService:
         self.ocr = CoralOCR()
         self.embedding = EmbeddingService()
 
-    async def capture(self) -> Screenshot:
+    def capture(self) -> Screenshot:
         # Simulate screenshot capture
         image = np.random.randint(0, 255, (1080, 1920, 3), dtype=np.uint8)
         timestamp = int(time.time())
@@ -32,8 +32,8 @@ class ScreenshotService:
             embedding=embedding,
             image_path=image_path
         )
-        await self.db_repo.save_screenshot(screenshot)
+        self.db_repo.save_screenshot(screenshot)
         return screenshot
 
-    async def get_timeline(self) -> list[Screenshot]:
-        return await self.db_repo.get_timeline()
+    def get_timeline(self) -> list[Screenshot]:
+        return self.db_repo.get_timeline()

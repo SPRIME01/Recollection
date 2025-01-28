@@ -13,6 +13,9 @@ class MinIORepository:
         )
 
     def save_image(self, image_path: str, image: np.ndarray) -> None:
-        image_pil = Image.fromarray(image)
-        image_pil.save(image_path, format="WEBP")
-        self.client.fput_object("screenshots", image_path, image_path)
+        try:
+            image_pil = Image.fromarray(image)
+            image_pil.save(image_path, format="WEBP")
+            self.client.fput_object("screenshots", image_path, image_path)
+        except Exception as e:
+            print(f"Failed to save image {image_path}: {e}")
