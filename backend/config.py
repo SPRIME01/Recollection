@@ -7,6 +7,8 @@ class Settings(BaseSettings):
     minio_endpoint: str = "localhost:9000"
     minio_access_key: str = ""
     minio_secret_key: str = ""
+    continuous_capture_interval: int = 60  # Interval in seconds
+    continuous_capture_enabled: bool = False  # Enable or disable continuous capture
 
     class Config:
         env_file = ".env"
