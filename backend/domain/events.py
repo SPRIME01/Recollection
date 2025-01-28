@@ -1,11 +1,9 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 from backend.domain.entities import Screenshot, SearchResult
 
-@dataclass
-class ScreenshotCapturedEvent:
+class ScreenshotCapturedEvent(BaseModel):
     screenshot: Screenshot
 
-@dataclass
-class SearchPerformedEvent:
+class SearchPerformedEvent(BaseModel):
     query: str
     results: list[SearchResult]

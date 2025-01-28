@@ -3,7 +3,7 @@ from pycoral.adapters import common
 from pycoral.utils.edgetpu import make_interpreter
 
 class CoralOCR:
-    def __init__(self):
+    def __init__(self) -> None:
         self.interpreter = make_interpreter("backend/models/ocr_edgetpu.tflite")
         self.interpreter.allocate_tensors()
 

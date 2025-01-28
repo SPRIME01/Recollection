@@ -1,14 +1,12 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 import numpy as np
 
-@dataclass
-class Screenshot:
+class Screenshot(BaseModel):
     timestamp: int
     text: str
     embedding: np.ndarray
     image_path: str
 
-@dataclass
-class SearchResult:
+class SearchResult(BaseModel):
     screenshot: Screenshot
     similarity_score: float
