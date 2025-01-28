@@ -5,6 +5,9 @@ from backend.repositories.minio_repo import MinIORepository
 from backend.domain.commands import CaptureScreenshotCommand, UpdateCaptureSettingsCommand
 from backend.domain.entities import Screenshot, CaptureSettings
 from pydantic import BaseModel
+from backend.use_cases.search import search as search_use_case
+from backend.domain.commands import SearchCommand
+from backend.domain.entities import SearchResult
 
 app = FastAPI()
 
@@ -40,3 +43,16 @@ class UpdateCaptureSettingsResponse(BaseModel):
 def update_capture_settings(command: UpdateCaptureSettingsCommand, service: ScreenshotService = Depends(get_screenshot_service)) -> UpdateCaptureSettingsResponse:
     service.update_capture_settings(command)
     return UpdateCaptureSettingsResponse(status="success")
+
+class SearchRequest(BaseModel):
+    query: str
+    threshold: float
+
+class SearchResponse(BaseModel):
+    results: list[SearchResult]
+
+@app.post("/search", response_model=SearchResponse)
+def search(request: SearchRequest, service: ScreenshotService = Depends(get_screenshot_service)) -> SearchResponse:
+    command = SearchCommand(query=request.query, threshold=request.threshold)
+    results = search_use_case(command, service)
+    return SearchResponse(results=results.results)

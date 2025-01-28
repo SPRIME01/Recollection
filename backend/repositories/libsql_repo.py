@@ -28,3 +28,7 @@ class LibSQLRepository:
         if result.rows:
             return CaptureSettings(**result.rows[0])
         return CaptureSettings(continuous_capture_enabled=False, continuous_capture_interval=60)
+
+    def get_all_embeddings(self) -> List[dict]:
+        result = self.client.execute("SELECT timestamp, embedding, image_path FROM screenshots")
+        return [{"timestamp": row["timestamp"], "embedding": row["embedding"], "image_path": row["image_path"]} for row in result.rows]
