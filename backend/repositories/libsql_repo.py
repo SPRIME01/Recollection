@@ -1,5 +1,5 @@
 from libsql_client import Client
-from backend.domain.entities import Screenshot
+from backend.domain.entities import Screenshot, CaptureSettings
 from typing import List
 import os
 
@@ -16,3 +16,15 @@ class LibSQLRepository:
     def get_timeline(self) -> List[Screenshot]:
         result = self.client.execute("SELECT * FROM screenshots ORDER BY timestamp DESC")
         return [Screenshot(**row) for row in result.rows]
+
+    def save_capture_settings(self, settings: CaptureSettings) -> None:
+        self.client.execute(
+            "INSERT INTO capture_settings (continuous_capture_enabled, continuous_capture_interval) VALUES (?, ?)",
+            [settings.continuous_capture_enabled, settings.continuous_capture_interval]
+        )
+
+    def get_capture_settings(self) -> CaptureSettings:
+        result = self.client.execute("SELECT * FROM capture_settings LIMIT 1")
+        if result.rows:
+            return CaptureSettings(**result.rows[0])
+        return CaptureSettings(continuous_capture_enabled=False, continuous_capture_interval=60)

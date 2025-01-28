@@ -2,8 +2,8 @@ from fastapi import FastAPI, Depends
 from backend.services.screenshot import ScreenshotService
 from backend.repositories.libsql_repo import LibSQLRepository
 from backend.repositories.minio_repo import MinIORepository
-from backend.domain.commands import CaptureScreenshotCommand
-from backend.domain.entities import Screenshot
+from backend.domain.commands import CaptureScreenshotCommand, UpdateCaptureSettingsCommand
+from backend.domain.entities import Screenshot, CaptureSettings
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -32,3 +32,11 @@ class TimelineResponse(BaseModel):
 def get_timeline(service: ScreenshotService = Depends(get_screenshot_service)) -> TimelineResponse:
     screenshots = service.get_timeline()
     return TimelineResponse(screenshots=screenshots)
+
+class UpdateCaptureSettingsResponse(BaseModel):
+    status: str
+
+@app.post("/settings", response_model=UpdateCaptureSettingsResponse)
+def update_capture_settings(command: UpdateCaptureSettingsCommand, service: ScreenshotService = Depends(get_screenshot_service)) -> UpdateCaptureSettingsResponse:
+    service.update_capture_settings(command)
+    return UpdateCaptureSettingsResponse(status="success")

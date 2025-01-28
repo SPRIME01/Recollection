@@ -24,3 +24,7 @@ class Screenshot(BaseModel):
 class SearchResult(BaseModel):
     screenshot: Screenshot
     similarity_score: float
+
+class CaptureSettings(BaseModel):
+    continuous_capture_enabled: bool
+    continuous_capture_interval: int

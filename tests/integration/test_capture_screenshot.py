@@ -27,3 +27,39 @@ def test_get_timeline_integration():
         assert "text" in screenshot
         assert "embedding" in screenshot
         assert "image_path" in screenshot
+
+def test_update_capture_settings_integration():
+    response = client.post("/settings", json={
+        "continuous_capture_enabled": True,
+        "continuous_capture_interval": 30
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+
+def test_continuous_capture_integration():
+    response = client.post("/settings", json={
+        "continuous_capture_enabled": True,
+        "continuous_capture_interval": 1
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+
+    # Wait for a few seconds to allow multiple captures
+    import time
+    time.sleep(5)
+
+    response = client.post("/settings", json={
+        "continuous_capture_enabled": False,
+        "continuous_capture_interval": 1
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert data["status"] == "success"
+
+    response = client.get("/timeline")
+    assert response.status_code == 200
+    data = response.json()
+    assert isinstance(data["screenshots"], list)
+    assert len(data["screenshots"]) > 1
