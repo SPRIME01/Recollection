@@ -10,7 +10,7 @@ class CaptureScreenshotResponse(BaseModel):
     status: str
     screenshot: Screenshot
 
-async def capture(service: ScreenshotService = Depends(ScreenshotService)) -> CaptureScreenshotResponse:
+def capture(service: ScreenshotService = Depends(ScreenshotService)) -> CaptureScreenshotResponse:
     command = CaptureScreenshotCommand()
-    screenshot = await service.capture()
+    screenshot = service.capture()
     return CaptureScreenshotResponse(status="success", screenshot=screenshot)

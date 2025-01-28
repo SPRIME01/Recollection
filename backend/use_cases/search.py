@@ -9,6 +9,6 @@ from pydantic import BaseModel
 class SearchResponse(BaseModel):
     results: list[SearchResult]
 
-async def search(command: SearchCommand, service: ScreenshotService = Depends(ScreenshotService)) -> SearchResponse:
-    results = await service.search(command.query, command.threshold)
+def search(command: SearchCommand, service: ScreenshotService = Depends(ScreenshotService)) -> SearchResponse:
+    results = service.search(command.query, command.threshold)
     return SearchResponse(results=results)
