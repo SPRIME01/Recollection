@@ -22,3 +22,6 @@ def optimize_image(image: np.ndarray) -> bytes:
     optimized_image = buffer.getvalue()
 
     return optimized_image
+
+def resize_image(image: Image, size: tuple) -> Image:
+    return image.resize(size, Image.ANTIALIAS)

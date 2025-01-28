@@ -7,6 +7,7 @@ from backend.repositories.minio_repo import MinIORepository
 from backend.services.ocr_tpu import CoralOCR
 from backend.services.embedding import EmbeddingService
 from backend.config import settings
+from sklearn.metrics.pairwise import cosine_similarity
 
 class ScreenshotService:
     def __init__(self, db_repo: LibSQLRepository, storage_repo: MinIORepository):
@@ -47,3 +48,22 @@ class ScreenshotService:
         while settings.continuous_capture_enabled:
             self.capture()
             time.sleep(settings.continuous_capture_interval)
+
+    def search(self, query: str, threshold: float) -> list[Screenshot]:
+        query_embedding = self.embedding.compute_embedding(query)
+        all_embeddings = self.db_repo.get_all_embeddings()
+        results = []
+
+        for item in all_embeddings:
+            similarity = cosine_similarity([query_embedding], [item["embedding"]])[0][0]
+            if similarity >= threshold:
+                screenshot = Screenshot(
+                    timestamp=item["timestamp"],
+                    text="",
+                    embedding=item["embedding"],
+                    image_path=item["image_path"]
+                )
+                results.append(screenshot)
+
+        results.sort(key=lambda x: cosine_similarity([query_embedding], [x.embedding])[0][0], reverse=True)
+        return results

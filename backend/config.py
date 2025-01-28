@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     minio_secret_key: str = ""
     continuous_capture_interval: int = 60  # Interval in seconds
     continuous_capture_enabled: bool = False  # Enable or disable continuous capture
+    clip_model_path: str = ""  # Path to the CLIP-Tiny model
 
     class Config:
         env_file = ".env"

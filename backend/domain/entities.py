@@ -24,6 +24,10 @@ class Screenshot(BaseModel):
 class SearchResult(BaseModel):
     screenshot: Screenshot
     similarity_score: float
+    embedding: Any
+
+    class Config:
+        arbitrary_types_allowed = True
 
 class CaptureSettings(BaseModel):
     continuous_capture_enabled: bool
